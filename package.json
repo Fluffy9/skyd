@@ -1,4 +1,14 @@
 {
+    "pr-log": {
+        "validLabels": [
+            ["duplicates", "Duplicates"],
+            ["good first issue", "Good First Issue"],
+            ["help wanted","Help Wanted"],
+            ["invalid","Invalid"],
+            ["question", "Question"],
+            ["wontfix","Won't Fix"]
+        ]
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/Fluffy9/skyd.git"
