@@ -1,0 +1,25 @@
+name: "Changelog"
+on:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+
+jobs:
+  build: 
+    name: Generate
+    runs-on: "ubuntu-latest"
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@master
+
+      - name: Write File
+        uses: DamianReeves/write-file-action@v1.0
+        with: 
+          path: ${{ env.home }}/changelog/${{github.event.pull_request.title}}.md
+          contents: |
+            echo "${{github.event.pull_request.title}}"
+          write-mode: "append"
+      
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          default_author: github_actions
