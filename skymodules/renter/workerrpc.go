@@ -1,7 +1,6 @@
 package renter
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -79,9 +78,8 @@ func (w *worker) managedExecuteProgram(p modules.Program, data []byte, fcid type
 	limit = stream.Limit()
 
 	// prepare a buffer so we can optimize our writes
-	buffer := w.staticBufferPool.Get().(*bytes.Buffer)
+	buffer := w.staticBufferPool.Get()
 	defer w.staticBufferPool.Put(buffer)
-	buffer.Reset()
 
 	// write the specifier
 	err = modules.RPCWrite(buffer, modules.RPCExecuteProgram)

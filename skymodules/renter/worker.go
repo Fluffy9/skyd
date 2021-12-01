@@ -30,6 +30,11 @@ import (
 )
 
 const (
+	// bufferSize defines the size of the buffers distributed by the buffer pool
+	//
+	// NOTE: we empirically found 4kib to be a safe value
+	bufferSize = 1 << 12 // 4kib
+
 	// minRegistryVersion defines the minimum version that is required for a
 	// host to support the registry.
 	minRegistryVersion = "1.5.5"
@@ -150,7 +155,9 @@ type (
 		// registry entries.
 		staticRegistryCache *registryRevisionCache
 
-		staticBufferPool sync.Pool
+		// staticBufferPool is a buffer pool that distributes buffers of a
+		// 'bufferSize' size
+		staticBufferPool *bufferPool
 
 		// staticSetInitialEstimates is an object that ensures the initial queue
 		// estimates of the HS and RJ queues are only set once.
@@ -165,7 +172,37 @@ type (
 		staticRenter *Renter
 		wakeChan     chan struct{} // Worker will check queues if given a wake signal.
 	}
+
+	// bufferPool defines a small helper type that wraps the 'Get' and 'Put'
+	// method of they sync.Pool casting the type to a buffer and resetting it to
+	// ensure it can never be forgotten
+	bufferPool struct {
+		staticPool sync.Pool
+	}
 )
+
+// newBufferPool returns a new instance of a buffer pool
+func newBufferPool() *bufferPool {
+	return &bufferPool{
+		staticPool: sync.Pool{
+			New: func() interface{} {
+				return bytes.NewBuffer(make([]byte, bufferSize))
+			},
+		},
+	}
+}
+
+// Get gets a buffer from the sync pool and resets it.
+func (bp *bufferPool) Get() *bytes.Buffer {
+	buffer := bp.staticPool.Get().(*bytes.Buffer)
+	buffer.Reset()
+	return buffer
+}
+
+// Put adds the given buffer back to the pool.
+func (bp *bufferPool) Put(buffer *bytes.Buffer) {
+	bp.staticPool.Put(buffer)
+}
 
 // callReadQueue returns the appropriate read queue depending on the priority of
 // the download.
@@ -290,11 +327,7 @@ func (r *Renter) newWorker(hostPubKey types.SiaPublicKey) (*worker, error) {
 		// Initialize a buffer pool handing out 4kb buffers. This to prevent
 		// reallocating a buffer of unknown size, but instead reusing the same
 		// buffer over and over again.
-		staticBufferPool: sync.Pool{
-			New: func() interface{} {
-				return bytes.NewBuffer(make([]byte, 1<<12))
-			},
-		},
+		staticBufferPool: newBufferPool(),
 
 		unprocessedChunks: newUploadChunks(),
 		wakeChan:          make(chan struct{}, 1),

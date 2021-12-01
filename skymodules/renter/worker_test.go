@@ -420,3 +420,25 @@ func TestWorkerSpending(t *testing.T) {
 		t.Fatal("unexpected")
 	}
 }
+
+// TestBufferPool is a small unit test that verifies the functionality of the
+// bufferPool helper type.
+func TestBufferPool(t *testing.T) {
+	t.Parallel()
+
+	// create new buffer pool
+	bp := newBufferPool()
+	if bp == nil {
+		t.Fatal("bad")
+	}
+
+	// fetch a buffer from the pool and assert capacity and length, asserting
+	// the buffers distributed are of the correct size and they have been reset
+	buffer := bp.Get()
+	if buffer.Cap() != bufferSize {
+		t.Fatal("buffer has incorrect capacity", buffer.Cap())
+	}
+	if buffer.Len() != 0 {
+		t.Fatal("buffer has incorrect length", buffer.Len())
+	}
+}

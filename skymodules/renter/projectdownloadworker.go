@@ -485,7 +485,7 @@ LOOP:
 		}
 
 		// if the current worker is launched, don't swap it out
-		expensiveWorkerPiece, launched, _ := pdc.currentDownload(w)
+		expensiveWorkerPiece, launched, _ := pdc.workerProgress(w)
 		if launched {
 			continue
 		}
@@ -745,10 +745,10 @@ func (pdc *projectDownloadChunk) workers() []*individualWorker {
 	return workers
 }
 
-// currentDownload returns the piece that was marked on the worker to download
+// workerProgress returns the piece that was marked on the worker to download
 // next, alongside two booleans that indicate whether it was launched and
 // whether it completed.
-func (pdc *projectDownloadChunk) currentDownload(w downloadWorker) (uint64, bool, bool) {
+func (pdc *projectDownloadChunk) workerProgress(w downloadWorker) (uint64, bool, bool) {
 	// return defaults if the worker is a chimera worker, those are not
 	// downloading by definition
 	iw, ok := w.(*individualWorker)
@@ -761,7 +761,7 @@ func (pdc *projectDownloadChunk) currentDownload(w downloadWorker) (uint64, bool
 
 	// fetch the worker's download progress, if that does not exist, it's
 	// neither launched nor completed.
-	workerProgress, exists := pdc.workerProgress[iw.identifier()]
+	workerProgress, exists := pdc.workerProgressMap[iw.identifier()]
 	if !exists {
 		return currentPiece, false, false
 	}
@@ -787,7 +787,7 @@ func (pdc *projectDownloadChunk) launchWorkerSet(ws *workerSet) {
 		}
 
 		// continue if the worker is already launched
-		piece, isLaunched, _ := pdc.currentDownload(w)
+		piece, isLaunched, _ := pdc.workerProgress(w)
 		if isLaunched {
 			continue
 		}
@@ -1168,7 +1168,7 @@ func (pdc *projectDownloadChunk) splitMostlikelyLessLikely(workers []downloadWor
 	for _, w := range workers {
 		// workers that have in-progress downloads are re-added as long as we
 		// don't already have a worker for the piece they are downloading
-		currPiece, launched, completed := pdc.currentDownload(w)
+		currPiece, launched, completed := pdc.workerProgress(w)
 		if launched && !completed {
 			_, exists := pieces[currPiece]
 			if !exists {
