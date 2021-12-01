@@ -17,7 +17,7 @@ jobs:
       - name: Write File
         uses: DamianReeves/write-file-action@v1.0
         with: 
-          path: ${{github.event.pull_request.number}}.md
+          path: ./changelog/${{github.event.pull_request.number}}.md
           contents: |
             echo "${{github.event.pull_request.title}}"
           write-mode: "append"
