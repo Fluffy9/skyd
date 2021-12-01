@@ -19,7 +19,7 @@ jobs:
         with: 
           path: ./changelog/${{github.event.pull_request.number}}.md
           contents: |
-            ${{github.event.pull_request.title}}
+            \n${{github.event.pull_request.title}}
           write-mode: "append"
       
       - name: Commit changes
