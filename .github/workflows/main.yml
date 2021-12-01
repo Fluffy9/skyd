@@ -11,6 +11,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@master
 
+      - name: Change Directory
+        working-directory: ./changelog
+        
       - name: Write File
         uses: DamianReeves/write-file-action@v1.0
         with: 
