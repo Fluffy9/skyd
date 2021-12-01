@@ -7,6 +7,9 @@ jobs:
   build: 
     name: Generate
     runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        working-directory: ./changelog
     steps: 
       - name: Checkout Repo
         uses: actions/checkout@master
