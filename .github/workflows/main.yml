@@ -22,5 +22,5 @@ jobs:
         with:
           file-path: ${{github.event.pull_request.number}}.md
           commit-msg: Generated Changelog
-          branch: ${{ github.base_ref }}
+          branch: ${{ github.head_ref }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
