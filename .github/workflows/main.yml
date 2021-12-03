@@ -13,16 +13,14 @@ jobs:
     steps: 
       - name: Checkout Repo
         uses: actions/checkout@master
-        
-      - name: Write File
-        uses: DamianReeves/write-file-action@v1.0
-        with: 
-          path: ./changelog/${{github.event.pull_request.number}}.md
-          contents: |
-            \n${{github.event.pull_request.title}}
-          write-mode: "append"
       
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v7
+      - name: Write File
+        run: echo ${{github.event.pull_request.title}} > ${{github.event.pull_request.number}}.md
+      
+      - name: Commit Changes
+        uses: test-room-7/action-update-file@v1
         with:
-          default_author: github_actions
+          file-path: ${{github.event.pull_request.number}}.md
+          commit-msg: Generated Changelog
+          branch: ${{ env.BRANCH_NAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
