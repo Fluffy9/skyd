@@ -15,12 +15,12 @@ jobs:
         uses: actions/checkout@master
       
       - name: Write File
-        run: echo ${{github.event.pull_request.title}} > ${{github.event.pull_request.number}}.md
+        run: echo ${{github.event.pull_request.title}} > ./changelog/${{github.event.pull_request.number}}.md
       
       - name: Commit Changes
         uses: test-room-7/action-update-file@v1
         with:
-          file-path: ${{github.event.pull_request.number}}.md
+          file-path: ./changelog/${{github.event.pull_request.number}}.md
           commit-msg: Generated Changelog
           branch: ${{github.event.pull_request.head.ref}}
           github-token: ${{ secrets.GITHUB_TOKEN }}
