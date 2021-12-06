@@ -1,0 +1,28 @@
+name: "Changelog"
+on:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+
+jobs:
+  build: 
+    name: Generate
+    runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        working-directory: ./changelog
+    steps: 
+      - name: Checkout Repo
+        uses: actions/checkout@master
+
+      
+      - name: Write File
+        run: echo ${{github.event.pull_request.title}} > ${{github.event.pull_request.number}}.md
+        working-directory: changelog
+      
+      - name: Commit Changes
+        uses: test-room-7/action-update-file@v1
+        with:
+          file-path: changelog/${{github.event.pull_request.number}}.md
+          commit-msg: Generated Changelog
+          branch: ${{github.event.pull_request.head.ref}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
