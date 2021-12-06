@@ -20,7 +20,7 @@ jobs:
       - name: Commit Changes
         uses: test-room-7/action-update-file@v1
         with:
-          file-path: ${{github.event.pull_request.number}}.md
+          file-path: ${{github.event.pull_request.head.ref}}.md
           commit-msg: Generated Changelog
           branch: ${{ github.head_ref }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
