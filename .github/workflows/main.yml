@@ -17,12 +17,12 @@ jobs:
       
       - name: Write File
         run: echo ${{github.event.pull_request.title}} > ${{github.event.pull_request.number}}.md
-        working-directory: ./changelog
+        working-directory: changelog
       
       - name: Commit Changes
         uses: test-room-7/action-update-file@v1
         with:
-          file-path: ./changelog/${{github.event.pull_request.number}}.md
+          file-path: changelog/${{github.event.pull_request.number}}.md
           commit-msg: Generated Changelog
           branch: ${{github.event.pull_request.head.ref}}
           github-token: ${{ secrets.GITHUB_TOKEN }}
