@@ -13,9 +13,11 @@ jobs:
     steps: 
       - name: Checkout Repo
         uses: actions/checkout@master
+
       
       - name: Write File
-        run: echo ${{github.event.pull_request.title}} > ./changelog/${{github.event.pull_request.number}}.md
+        run: echo ${{github.event.pull_request.title}} > ${{github.event.pull_request.number}}.md
+        working-directory: ./changelog
       
       - name: Commit Changes
         uses: test-room-7/action-update-file@v1
